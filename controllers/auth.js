@@ -228,10 +228,6 @@ exports.login = async (req, res, next)=>{
 
         const {token, password, isAdmin, ...otherDetails} = Users._doc
 
-        //  res.cookie("access_token", token, {
-        //     httpOnly: true, 
-        //  })
-
         const mailOptions ={
             from: process.env.USER,
             to: Users.email,
