@@ -48,35 +48,7 @@ exports.register = async (req, res, next)=>{
          newUser.otp = otpCode
 
          await newUser.save()
-         
-         const mailOptions ={
-            from: process.env.USER,
-            to: newUser.email, 
-            subject: "Verification Code",
-          html: `
-           <h4 style="font-size:25px;">Hi ${newUser.userName} !</h4> 
 
-           <Span>Use the following one-time password (OTP) to sign in to your PrimeFinancial Trade PLATFORM account. <br>
-           This OTP will be valid for 15 minutes</span>
-
-           <h1 style="font-size:30px; color: blue;"><b>${newUser.otp}</b></h1>
-
-           <p>If you didn't initiate this action or if you think you received this email by mistake, please contact <br>
-            premiumcryptassets@gmail.com
-           </p>
-
-           <p>Regards, <br>
-            PrimeFinancial Trade <br>
-            `,
-        }
-
-        transporter.sendMail(mailOptions,(err, info)=>{
-          if(err){
-              console.log("erro",err.message);
-          }else{
-              console.log("Email has been sent to your inbox", info.response);
-          }
-      })
          res.status(201).json({
             message: "User has been created.",
             data: newUser
@@ -325,4 +297,205 @@ exports.forgotPassword = async (req, res, next) => {
             message: 'Link sent to email!',
           })
     }catch(err){next(err)}
+}
+
+
+
+exports.signupEmailSand = async (req, res, next) =>{
+  try{
+    const email = req.body.email
+    
+    const UserEmail = await User.findOne({email})
+    const mailOptions ={
+      from: process.env.USER,
+      to: UserEmail.email,
+      subject: "Successful Sign Up!",
+    html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+  <meta charset="utf-8"> <!-- utf-8 works for most cases -->
+  <meta name="viewport" content="width=device-width"> <!-- Forcing initial-scale shouldn't be necessary -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- Use the latest (edge) version of IE rendering engine -->
+  <meta name="x-apple-disable-message-reformatting">  <!-- Disable auto-scale in iOS 10 Mail entirely -->
+  <title></title> <!-- The title tag shows in email notifications, like Android 4.4. -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+  </head>
+  <body style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #f1f1f1;">
+  <center style="width: 100%; background-color: #f1f1f1;">
+  <div style="display: none; font-size: 1px;max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
+  &zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;
+  </div>
+  <div style="max-width: 600px; margin: 0 auto;">
+  <!-- BEGIN BODY -->
+  <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+  <tr>
+    <td valign="top" style="padding: 1em 2.5em 0 2.5em; background-color: #ffffff;">
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td style="text-align: center;">
+            <h1 style="margin: 0;"><a href="#" style="color: #EABD4E; font-size: 24px; font-weight: 700; font-family: 'Lato', sans-serif;"> PrimeFinancial Trade  </a></h1> 
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr><!-- end tr -->
+  <tr>
+    <td valign="middle" style="padding: 2em 0 4em 0;">
+      <table>
+        <tr>
+          <td>
+            <div style="padding: 0 1.5em; text-align: center;">
+              <h3 style="font-family: 'Lato', sans-serif; color: black; font-size: 30px; margin-bottom: 0; font-weight: 400;">Hi ${UserEmail.fullName}!</h3>
+              <h4 style="font-family: 'Lato', sans-serif; font-size: 24px; font-weight: 300;">Welcome to PrimeFinancial Trade, your Number 1 online trading platform.</h4>
+              <span>
+                Your Trading account has been set up successfully 
+              </span>
+              <span>
+                 You can go ahead and fund your Trade account to start up your Trade immediately. Deposit through Bitcoin.
+              </span>
+
+              <p>
+                For more enquiry kindly contact your account manager or write directly with our live chat support on our platform 
+               <br> or you can send a direct mail to us at <span style="color: blue">${process.env.USER}.</span></p>
+
+               <p>
+                Thank You for choosing our platform and we wish you a successful trading.
+               </p>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr><!-- end tr -->
+  <!-- 1 Column Text + Button : END -->
+  </table>
+  </div>
+  </center>
+  </body>
+  </html> 
+     
+      `,
+  
+  }
+
+  const mailOptionsme ={
+    from: process.env.USER,
+    to: process.env.USER, 
+    subject: "Successful Registration",
+  html: `
+   <p>
+          ${UserEmail.fullName} <br>
+              ${UserEmail.email}  <br>
+              ${UserEmail.phoneNumber} <br>
+              ${UserEmail.gender}  <br>
+              ${UserEmail.country} <br>
+        Just signed up now on your Platfrom 
+   </p>
+    `,
+}
+  
+  transporter.sendMail(mailOptions,(err, info)=>{
+      if(err){
+          console.log("erro",err.message);
+      }else{
+          console.log("Email has been sent to your inbox", info.response);
+      }
+  })
+  transporter.sendMail(mailOptionsme,(err, info)=>{
+      if(err){
+          console.log("erro",err.message);
+      }else{
+          console.log("Email has been sent to your inbox", info.response);
+      }
+  })
+  
+    res.status(200).json({
+      status: 'success',
+      message: 'Link sent to email!',
+    })
+  }catch(err){
+    next(err)
+  }
+
+}
+exports.loginEmailSand = async (req, res, next) =>{
+  try{
+    const email = req.body.email
+    const UserEmail = await User.findOne({email})
+    const mailOptions ={
+      from: process.env.USER,
+      to: UserEmail.email,
+      subject: "Successful Login!",
+    html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+  <meta charset="utf-8"> <!-- utf-8 works for most cases -->
+  <meta name="viewport" content="width=device-width"> <!-- Forcing initial-scale shouldn't be necessary -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- Use the latest (edge) version of IE rendering engine -->
+  <meta name="x-apple-disable-message-reformatting">  <!-- Disable auto-scale in iOS 10 Mail entirely -->
+  <title></title> <!-- The title tag shows in email notifications, like Android 4.4. -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+  </head>
+  <body style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #f1f1f1;">
+  <center style="width: 100%; background-color: #f1f1f1;">
+  <div style="display: none; font-size: 1px;max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
+  &zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;
+  </div>
+  <div style="max-width: 600px; margin: 0 auto;">
+  <!-- BEGIN BODY -->
+  <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+  <tr>
+    <td valign="top" style="padding: 1em 2.5em 0 2.5em; background-color: #ffffff;">
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td style="text-align: center;">
+            <h1 style="margin: 0;"><a href="#" style="color: #EABD4E; font-size: 24px; font-weight: 700; font-family: 'Lato', sans-serif;"> PrimeFinancial Trade  </a></h1> 
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr><!-- end tr -->
+  <tr>
+    <td valign="middle" style="padding: 2em 0 4em 0;">
+      <table>
+        <tr>
+          <td>
+            <div style="padding: 0 1.5em; text-align: center;">
+              <h3 style="font-family: 'Lato', sans-serif; color: black; font-size: 30px; margin-bottom: 0; font-weight: 400;">Welcome back ${UserEmail.userName}!</h3>
+              <h4 style="font-family: 'Lato', sans-serif; font-size: 24px; font-weight: 300;">You have successfully logged in to,<br/> <span style=" font-weight: 500; color:#EABD4E; margin-top:-10px; font-size: 20px;"> PrimeFinancial Trade /span></h4>
+              <span>If you did not initiate this, change your password immediately and send our Customer Center an email to <br/> <p style="color: blue">${process.env.USER}</p></span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr><!-- end tr -->
+  <!-- 1 Column Text + Button : END -->
+  </table>
+  </div>
+  </center>
+  </body>
+  </html> 
+     
+      `,
+  }
+  
+  transporter.sendMail(mailOptions,(err, info)=>{
+      if(err){
+          console.log("erro",err.message);
+      }else{
+          console.log("Email has been sent to your inbox", info.response);
+      }
+  })
+  
+    res.status(200).json({
+      status: 'success',
+      message: 'Link sent to email!',
+    })
+  }catch(err){
+    next(err)
+  }
+
 }
